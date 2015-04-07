@@ -9,7 +9,8 @@ import imgui_glfw;
 extern(C) nothrow void error_callback(int error, const(char)* description)
 {
 	import std.stdio;
-	try writefln("glfw err: %s ('%s')",error, description);
+    import std.conv;
+	try writefln("glfw err: %s ('%s')",error, to!string(description));
 	catch{}
 }
 
@@ -26,7 +27,8 @@ void main()
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-	GLFWwindow* window = glfwCreateWindow(1280, 720, "ImGui OpenGL3 example", null, null);
+    glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, true);
+	auto window = glfwCreateWindow(1280, 720, "ImGui OpenGL3 example", null, null);
 	glfwMakeContextCurrent(window);
 	glfwInit();
 
@@ -44,7 +46,7 @@ void main()
 	
 	bool show_test_window = true;
 	bool show_another_window = false;
-	ImVec4 clear_color = ImVec4(114, 144, 154 , 0);
+    float[3] clear_color = [0.3f, 0.4f, 0.8f];
 	
 	// Main loop
 	while (!glfwWindowShouldClose(window))
@@ -59,32 +61,32 @@ void main()
 		{
 			static float f = 0.0f;
 			ImGui_Text("Hello, world!");
-			//ImGui_SliderFloat("float", &f, 0.0f, 1.0f);
-			//ImGui_ColorEdit3("clear color", (float*)&clear_color);
+			ImGui_SliderFloat("float", &f, 0.0f, 1.0f);
+			ImGui_ColorEdit3("clear color", clear_color);
 			if (ImGui_Button("Test Window",)) show_test_window ^= 1;
 			if (ImGui_Button("Another Window")) show_another_window ^= 1;
-			//ImGui_Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui_GetIO().Framerate, ImGui_GetIO().Framerate);
+			ImGui_Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui_GetIO().Framerate, ImGui_GetIO().Framerate);
 		}
-		/+
+		
 		// 2. Show another simple window, this time using an explicit Begin/End pair
 		if (show_another_window)
 		{
-		ImGui::SetNextWindowSize(ImVec2(200,100), ImGuiSetCond_FirstUseEver);
-		ImGui::Begin("Another Window", &show_another_window);
-		ImGui::Text("Hello");
-		ImGui::End();
+            ImGui_SetNextWindowSize(ImVec2(200,100), ImGuiSetCond_FirstUseEver);
+    		ImGui_Begin("Another Window", &show_another_window);
+    		ImGui_Text("Hello");
+    		ImGui_End();
 		}
-		
+		/+
 		// 3. Show the ImGui test window. Most of the sample code is in ImGui::ShowTestWindow()
 		if (show_test_window)
 		{
-		ImGui::SetNextWindowPos(ImVec2(650, 20), ImGuiSetCond_FirstUseEver);
-		ImGui::ShowTestWindow(&show_test_window);
+		    ImGui::SetNextWindowPos(ImVec2(650, 20), ImGuiSetCond_FirstUseEver);
+		    ImGui::ShowTestWindow(&show_test_window);
 		}
 		+/
 		// Rendering
 		glViewport(0, 0, cast(int)io.DisplaySize.x, cast(int)io.DisplaySize.y);
-		glClearColor(clear_color.x, clear_color.y, clear_color.z, clear_color.w);
+        glClearColor(clear_color[0], clear_color[1], clear_color[2], 0);
 		glClear(GL_COLOR_BUFFER_BIT);
 		ImGui_Render();
 		glfwSwapBuffers(window);

@@ -34,7 +34,8 @@ module derelict.imgui.types;
 import derelict.util.system;
 
 // User fill ImGuiIO.KeyMap[] array with indices into the ImGuiIO.KeysDown[512] array
-enum ImGuiKey_
+alias ImGuiKey = int;
+enum ImGuiKey_:int
 {
 	ImGuiKey_Tab,
 	ImGuiKey_LeftArrow,
@@ -54,6 +55,36 @@ enum ImGuiKey_
 	ImGuiKey_Y,         // for CTRL+Y: redo
 	ImGuiKey_Z,         // for CTRL+Z: undo
 	ImGuiKey_COUNT
+};
+
+alias ImGuiWindowFlags = int; 
+enum
+{
+    // Default: 0
+    ImGuiWindowFlags_NoTitleBar             = 1 << 0,   // Disable title-bar
+    ImGuiWindowFlags_NoResize               = 1 << 1,   // Disable user resizing with the lower-right grip
+    ImGuiWindowFlags_NoMove                 = 1 << 2,   // Disable user moving the window
+    ImGuiWindowFlags_NoScrollbar            = 1 << 3,   // Disable scrollbar (window can still scroll with mouse or programatically)
+    ImGuiWindowFlags_NoScrollWithMouse      = 1 << 4,   // Disable user scrolling with mouse wheel
+    ImGuiWindowFlags_NoCollapse             = 1 << 5,   // Disable user collapsing window by double-clicking on it
+    ImGuiWindowFlags_AlwaysAutoResize       = 1 << 6,   // Resize every window to its content every frame
+    ImGuiWindowFlags_ShowBorders            = 1 << 7,   // Show borders around windows and items
+    ImGuiWindowFlags_NoSavedSettings        = 1 << 8,   // Never load/save settings in .ini file
+    // [Internal]
+    ImGuiWindowFlags_ChildWindow            = 1 << 9,   // For internal use by BeginChild()
+    ImGuiWindowFlags_ChildWindowAutoFitX    = 1 << 10,  // For internal use by BeginChild()
+    ImGuiWindowFlags_ChildWindowAutoFitY    = 1 << 11,  // For internal use by BeginChild()
+    ImGuiWindowFlags_ComboBox               = 1 << 12,  // For internal use by ComboBox()
+    ImGuiWindowFlags_Tooltip                = 1 << 13,  // For internal use by BeginTooltip()
+    ImGuiWindowFlags_Popup                  = 1 << 14   // For internal use by BeginPopup()
+};
+
+alias ImGuiSetCond = int;
+enum
+{
+    ImGuiSetCond_Always        = 1 << 0, // Set the variable
+    ImGuiSetCond_Once          = 1 << 1, // Only set the variable on the first call per runtime session
+    ImGuiSetCond_FirstUseEver  = 1 << 2  // Only set the variable if the window doesn't exist in the .ini file
 };
 
 align(1) struct ImVec2
@@ -76,7 +107,12 @@ struct ImDrawList{}
 alias ImWchar = ushort;
 alias ImU32 = uint;
 
-alias RenderDrawListCallback = extern(C) nothrow void function(ImDrawList** draw_lists, int count);
+alias RenderDrawListFunc = extern(C) nothrow void function(ImDrawList** draw_lists, int count);
+alias GetClipboardTextFunc = extern(C) nothrow const(char)* function();
+alias SetClipboardTextFunc = extern(C) nothrow void function(const(char)*);
+alias MemAllocFunc = extern(C) nothrow void* function(size_t);
+alias MemFreeFunc = extern(C) nothrow void function(void*);
+alias ImeSetInputScreenPosFunc = extern(C) nothrow void function(int,int);
 
 align(1) struct ImGuiIO
 {
@@ -103,27 +139,27 @@ align(1) struct ImGuiIO
 	
 	// REQUIRED: rendering function. 
 	// See example code if you are unsure of how to implement this.
-	RenderDrawListCallback RenderDrawListsFn;
+    RenderDrawListFunc RenderDrawListsFn;
 	
 	// Optional: access OS clipboard
 	// (default to use native Win32 clipboard on Windows, otherwise uses a private clipboard. Override to access OS clipboard on other architectures)
-	/+const char* (*GetClipboardTextFn)();
-	void        (*SetClipboardTextFn)(const char* text);
+    GetClipboardTextFunc GetClipboardTextFn;
+    SetClipboardTextFunc SetClipboardTextFn;
 	
 	// Optional: override memory allocations. MemFreeFn() may be called with a NULL pointer.
 	// (default to posix malloc/free)
-	void*       (*MemAllocFn)(size_t sz);
-	void        (*MemFreeFn)(void* ptr);
+	MemAllocFunc MemAllocFn;
+    MemFreeFunc MemFreeFn;
 	
 	// Optional: notify OS Input Method Editor of the screen position of your cursor for text input position (e.g. when using Japanese/Chinese IME in Windows)
 	// (default to use native imm32 api on Windows)
-	void        (*ImeSetInputScreenPosFn)(int x, int y);
+    ImeSetInputScreenPosFunc ImeSetInputScreenPosFn;
 	void*       ImeWindowHandle;            // (Windows) Set this to your HWND to get automatic IME cursor positioning.
-	+/
+	
 	//------------------------------------------------------------------
 	// Input - Fill before calling NewFrame()
 	//------------------------------------------------------------------
-	
+
 	ImVec2      	MousePos;                   // Mouse position, in pixels (set to -1,-1 if no mouse / on another screen, etc.)
 	bool[5]     	MouseDown;        		    // Mouse buttons. ImGui itself only uses button 0 (left button). Others buttons allows to track if mouse is being used by your application + available to user as a convenience via IsMouse** API.
 	float       	MouseWheel;                 // Mouse wheel: 1 unit scrolls about 5 lines text. 
@@ -168,11 +204,11 @@ align(1) struct ImDrawVert
 
 alias ImTextureID = void*;
 
-alias ImDrawCallback = void function(const ImDrawList* parent_list, const ImDrawCmd* cmd);
+alias ImDrawCallback = void function(const ImDrawList* parent_list, const ImDrawCmd* cmd) nothrow;
 
-struct ImDrawCmd
+align(1) struct ImDrawCmd
 {
-	uint    vtx_count;                  // Number of vertices (multiple of 3) to be drawn as triangles. The vertices are stored in the callee ImDrawList's vtx_buffer[] array.
+	uint            vtx_count;                  // Number of vertices (multiple of 3) to be drawn as triangles. The vertices are stored in the callee ImDrawList's vtx_buffer[] array.
 	ImVec4          clip_rect;                  // Clipping rectangle (x1, y1, x2, y2)
 	ImTextureID     texture_id;                 // User-provided texture ID. Set by user in ImfontAtlas::SetTexID() for fonts or passed to Image*() functions. Ignore if never using images or multiple fonts atlas.
 	ImDrawCallback  user_callback;              // If != NULL, call the function instead of rendering the vertices. vtx_count will be 0. clip_rect and texture_id will be set normally.

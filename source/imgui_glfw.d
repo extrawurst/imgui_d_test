@@ -5,12 +5,15 @@ import derelict.opengl3.gl3;
 import derelict.glfw3.glfw3;
 
 GLFWwindow* g_window;
+double       g_Time = 0.0f;
+bool[3]      g_MousePressed;
+float        g_MouseWheel = 0.0f;
 GLuint       g_FontTexture = 0;
 int          g_ShaderHandle = 0, g_VertHandle = 0, g_FragHandle = 0;
 int          g_AttribLocationTex = 0, g_AttribLocationProjMtx = 0;
 int          g_AttribLocationPosition = 0, g_AttribLocationUV = 0, g_AttribLocationColor = 0;
 size_t       g_VboMaxSize = 20000;
-uint g_VboHandle, g_VaoHandle;
+uint         g_VboHandle, g_VaoHandle;
 
 extern(C) nothrow void ImGui_ImplGlfwGL3_RenderDrawLists(ImDrawList** cmd_lists, int count)
 {
@@ -32,7 +35,6 @@ extern(C) nothrow void ImGui_ImplGlfwGL3_RenderDrawLists(ImDrawList** cmd_lists,
 	// Setup orthographic projection matrix
 	const float width = io.DisplaySize.x;
 	const float height = io.DisplaySize.y;
-	//try writefln("io: %s\ncmds: %s",*io, count); catch{}
 	const float[4][4] ortho_projection =
 	[
 		[ 2.0f/width,	0.0f,			0.0f,		0.0f ],
@@ -64,6 +66,7 @@ extern(C) nothrow void ImGui_ImplGlfwGL3_RenderDrawLists(ImDrawList** cmd_lists,
 	ubyte* buffer_data = cast(ubyte*)glMapBuffer(GL_ARRAY_BUFFER, GL_WRITE_ONLY);
 	if (!buffer_data)
 		return;
+
 	for (int n = 0; n < count; n++)
 	{
 		ImDrawList* cmd_list = cmd_lists[n];
@@ -90,13 +93,12 @@ extern(C) nothrow void ImGui_ImplGlfwGL3_RenderDrawLists(ImDrawList** cmd_lists,
 
 			if (pcmd.user_callback)
 			{
-				//pcmd.user_callback(cmd_list, pcmd);
+				pcmd.user_callback(cmd_list, pcmd);
 			}
 			else
 			{
 				glBindTexture(GL_TEXTURE_2D, cast(GLuint)pcmd.texture_id);
-				//TODO:
-				//glScissor((int)pcmd->clip_rect.x, (int)(height - pcmd->clip_rect.w), (int)(pcmd->clip_rect.z - pcmd->clip_rect.x), (int)(pcmd->clip_rect.w - pcmd->clip_rect.y));
+				glScissor(cast(int)pcmd.clip_rect.x, cast(int)(height - pcmd.clip_rect.w), cast(int)(pcmd.clip_rect.z - pcmd.clip_rect.x), cast(int)(pcmd.clip_rect.w - pcmd.clip_rect.y));
 				glDrawArrays(GL_TRIANGLES, vtx_offset, pcmd.vtx_count);
 			}
 			vtx_offset += pcmd.vtx_count;
@@ -112,13 +114,45 @@ extern(C) nothrow void ImGui_ImplGlfwGL3_RenderDrawLists(ImDrawList** cmd_lists,
 	glBindTexture(GL_TEXTURE_2D, 0);
 }
 
-void ImGui_ImplGlfwGL3_Init(GLFWwindow* window, bool v)
+void ImGui_ImplGlfwGL3_Init(GLFWwindow* window, bool install_callbacks)
 {
 	g_window = window;
 
 	ImGuiIO* io = ImGui_GetIO();
-	
-	io.RenderDrawListsFn = &ImGui_ImplGlfwGL3_RenderDrawLists;
+    with(ImGuiKey_){
+    io.KeyMap[ImGuiKey_Tab] = GLFW_KEY_TAB;                 // Keyboard mapping. ImGui will use those indices to peek into the io.KeyDown[] array.
+    io.KeyMap[ImGuiKey_LeftArrow] = GLFW_KEY_LEFT;
+    io.KeyMap[ImGuiKey_RightArrow] = GLFW_KEY_RIGHT;
+    io.KeyMap[ImGuiKey_UpArrow] = GLFW_KEY_UP;
+    io.KeyMap[ImGuiKey_DownArrow] = GLFW_KEY_DOWN;
+    io.KeyMap[ImGuiKey_Home] = GLFW_KEY_HOME;
+    io.KeyMap[ImGuiKey_End] = GLFW_KEY_END;
+    io.KeyMap[ImGuiKey_Delete] = GLFW_KEY_DELETE;
+    io.KeyMap[ImGuiKey_Backspace] = GLFW_KEY_BACKSPACE;
+    io.KeyMap[ImGuiKey_Enter] = GLFW_KEY_ENTER;
+    io.KeyMap[ImGuiKey_Escape] = GLFW_KEY_ESCAPE;
+    io.KeyMap[ImGuiKey_A] = GLFW_KEY_A;
+    io.KeyMap[ImGuiKey_C] = GLFW_KEY_C;
+    io.KeyMap[ImGuiKey_V] = GLFW_KEY_V;
+    io.KeyMap[ImGuiKey_X] = GLFW_KEY_X;
+    io.KeyMap[ImGuiKey_Y] = GLFW_KEY_Y;
+    io.KeyMap[ImGuiKey_Z] = GLFW_KEY_Z;
+    }
+    
+    io.RenderDrawListsFn = &ImGui_ImplGlfwGL3_RenderDrawLists;
+    io.SetClipboardTextFn = &ImGui_ImplGlfwGL3_SetClipboardText;
+    io.GetClipboardTextFn = &ImGui_ImplGlfwGL3_GetClipboardText;
+/+#ifdef _MSC_VER
+    io.ImeWindowHandle = glfwGetWin32Window(g_Window);
+#endif+/
+
+    if (install_callbacks)
+    {
+        glfwSetMouseButtonCallback(window, &ImGui_ImplGlfwGL3_MouseButtonCallback);
+        glfwSetScrollCallback(window, &ImGui_ImplGlfwGL3_ScrollCallback);
+        glfwSetKeyCallback(window, &ImGui_ImplGlfwGL3_KeyCallback);
+        glfwSetCharCallback(window, &ImGui_ImplGlfwGL3_CharCallback);
+    }
 }
 
 void ImGui_ImplGlfwGL3_CreateDeviceObjects()
@@ -176,18 +210,56 @@ void ImGui_ImplGlfwGL3_CreateDeviceObjects()
 	glEnableVertexAttribArray(g_AttribLocationPosition);
 	glEnableVertexAttribArray(g_AttribLocationUV);
 	glEnableVertexAttribArray(g_AttribLocationColor);
-	
-//#define OFFSETOF(TYPE, ELEMENT) ((size_t)&(((TYPE *)0)->ELEMENT))
 
 	glVertexAttribPointer(g_AttribLocationPosition, 2, GL_FLOAT, GL_FALSE, ImDrawVert.sizeof, cast(void*)0);
-	glVertexAttribPointer(g_AttribLocationUV, 2, GL_FLOAT, GL_FALSE, ImDrawVert.sizeof, cast(void*)(3*4));
-	glVertexAttribPointer(g_AttribLocationColor, 4, GL_UNSIGNED_BYTE, GL_TRUE, ImDrawVert.sizeof, cast(void*)(3*4 + 2*4));
+    glVertexAttribPointer(g_AttribLocationUV, 2, GL_FLOAT, GL_FALSE, ImDrawVert.sizeof, cast(void*)ImDrawVert.uv.offsetof);
+    glVertexAttribPointer(g_AttribLocationColor, 4, GL_UNSIGNED_BYTE, GL_TRUE, ImDrawVert.sizeof, cast(void*)ImDrawVert.col.offsetof);
 
-//#undef OFFSETOF
 	glBindVertexArray(0);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 
 	ImGui_ImplGlfwGL3_CreateFontsTexture();
+}
+
+extern(C) nothrow const(char)* ImGui_ImplGlfwGL3_GetClipboardText()
+{
+    return glfwGetClipboardString(g_window);
+}
+
+extern(C) nothrow void ImGui_ImplGlfwGL3_SetClipboardText(const(char)* text)
+{
+    glfwSetClipboardString(g_window, text);
+}
+
+extern(C) nothrow void ImGui_ImplGlfwGL3_MouseButtonCallback(GLFWwindow*, int button, int action, int /*mods*/)
+{
+    if (action == GLFW_PRESS && button >= 0 && button < 3)
+        g_MousePressed[button] = true;
+}
+
+extern(C) nothrow void ImGui_ImplGlfwGL3_ScrollCallback(GLFWwindow*, double /*xoffset*/, double yoffset)
+{
+    g_MouseWheel += cast(float)yoffset; // Use fractional mouse wheel, 1.0 unit 5 lines.
+}
+
+extern(C) nothrow void ImGui_ImplGlfwGL3_KeyCallback(GLFWwindow*, int key, int, int action, int mods)
+{
+    auto io = ImGui_GetIO();
+    if (action == GLFW_PRESS)
+        io.KeysDown[key] = true;
+    if (action == GLFW_RELEASE)
+        io.KeysDown[key] = false;
+    io.KeyCtrl = (mods & GLFW_MOD_CONTROL) != 0;
+    io.KeyShift = (mods & GLFW_MOD_SHIFT) != 0;
+    io.KeyAlt = (mods & GLFW_MOD_ALT) != 0;
+}
+
+extern(C) nothrow void ImGui_ImplGlfwGL3_CharCallback(GLFWwindow*, uint c)
+{
+    if (c > 0 && c < 0x10000)
+    {
+        ImGuiIO_AddInputCharacter(cast(ushort)c);
+    }
 }
 
 void ImGui_ImplGlfwGL3_CreateFontsTexture()
@@ -204,17 +276,32 @@ void ImGui_ImplGlfwGL3_CreateFontsTexture()
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, pixels);
 
-	//TODO:
 	// Store our identifier
-	//ImFontAtlas_SetTexID(io.Fonts,cast(void*)&g_FontTexture);
+	ImFontAtlas_SetTexID(io.Fonts, cast(void*)g_FontTexture);
 }
 
 void ImGui_ImplGlfwGL3_Shutdown()
 {
+    if (g_VaoHandle) glDeleteVertexArrays(1, &g_VaoHandle);
+    if (g_VboHandle) glDeleteBuffers(1, &g_VboHandle);
+    g_VaoHandle = 0;
+    g_VboHandle = 0;
+    
+    glDetachShader(g_ShaderHandle, g_VertHandle);
+    glDeleteShader(g_VertHandle);
+    g_VertHandle = 0;
+    
+    glDetachShader(g_ShaderHandle, g_FragHandle);
+    glDeleteShader(g_FragHandle);
+    g_FragHandle = 0;
+    
+    glDeleteProgram(g_ShaderHandle);
+    g_ShaderHandle = 0;
+
 	if (g_FontTexture)
 	{
 		glDeleteTextures(1, &g_FontTexture);
-		//ImGui::GetIO().Fonts->TexID = 0;
+        ImFontAtlas_SetTexID(ImGui_GetIO().Fonts, cast(void*)0);
 		g_FontTexture = 0;
 	}
 
@@ -226,7 +313,7 @@ void ImGui_ImplGlfwGL3_NewFrame()
 	if (!g_FontTexture)
 		ImGui_ImplGlfwGL3_CreateDeviceObjects();
 
-	ImGuiIO* io = ImGui_GetIO();
+	auto io = ImGui_GetIO();
 
 	// Setup display size (every frame to accommodate for window resizing)
 	int w, h;
@@ -235,5 +322,37 @@ void ImGui_ImplGlfwGL3_NewFrame()
 	glfwGetFramebufferSize(g_window, &display_w, &display_h);
 	io.DisplaySize = ImVec2(cast(float)display_w, cast(float)display_h);
 
+    // Setup time step
+    double current_time =  glfwGetTime();
+    io.DeltaTime = g_Time > 0.0 ? cast(float)(current_time - g_Time) : cast(float)(1.0f/60.0f);
+    g_Time = current_time;
+
+    // Setup inputs
+    // (we already got mouse wheel, keyboard keys & characters from glfw callbacks polled in glfwPollEvents())
+    if (glfwGetWindowAttrib(g_window, GLFW_FOCUSED))
+    {
+        double mouse_x, mouse_y;
+        glfwGetCursorPos(g_window, &mouse_x, &mouse_y);
+        mouse_x *= cast(float)display_w / w;                        // Convert mouse coordinates to pixels
+        mouse_y *= cast(float)display_h / h;
+        io.MousePos = ImVec2(mouse_x, mouse_y);   // Mouse position, in pixels (set to -1,-1 if no mouse / on another screen, etc.)
+    }
+    else
+    {
+        io.MousePos = ImVec2(-1,-1);
+    }
+
+    for (int i = 0; i < 3; i++)
+    {
+        io.MouseDown[i] = g_MousePressed[i] || glfwGetMouseButton(g_window, i) != 0;    // If a mouse press event came, always pass it as "mouse held this frame", so we don't miss click-release events that are shorter than 1 frame.
+        g_MousePressed[i] = false;
+    }
+    
+    io.MouseWheel = g_MouseWheel;
+    g_MouseWheel = 0.0f;
+    
+    // Hide/show hardware mouse cursor
+    glfwSetInputMode(g_window, GLFW_CURSOR, io.MouseDrawCursor ? GLFW_CURSOR_HIDDEN : GLFW_CURSOR_NORMAL);
+    
 	ImGui_NewFrame();
 }

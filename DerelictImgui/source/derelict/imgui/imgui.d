@@ -73,14 +73,24 @@ class DerelictImguiLoader : SharedLibLoader
 			bindFunc(cast(void**)&ImGui_Shutdown, "ImGui_Shutdown");
 			bindFunc(cast(void**)&ImGui_NewFrame, "ImGui_NewFrame");
 			bindFunc(cast(void**)&ImGui_Render, "ImGui_Render");
+
+            bindFunc(cast(void**)&ImGui_Begin, "ImGui_Begin");
+            bindFunc(cast(void**)&ImGui_End, "ImGui_End");
+
 			bindFunc(cast(void**)&ImGui_Text, "ImGui_Text");
 			bindFunc(cast(void**)&ImGui_SliderFloat, "ImGui_SliderFloat");
+            bindFunc(cast(void**)&ImGui_ColorEdit3, "ImGui_ColorEdit3");
 			bindFunc(cast(void**)&ImGui_Button, "ImGui_Button");
+
+            bindFunc(cast(void**)&ImGui_SetNextWindowSize, "ImGui_SetNextWindowSize");
+
 			bindFunc(cast(void**)&ImFontAtlas_GetTexDataAsRGBA32, "ImFontAtlas_GetTexDataAsRGBA32");
+            bindFunc(cast(void**)&ImFontAtlas_SetTexID, "ImFontAtlas_SetTexID");
 			bindFunc(cast(void**)&ImDrawList_GetVertexBufferSize, "ImDrawList_GetVertexBufferSize");
 			bindFunc(cast(void**)&ImDrawList_GetVertexPtr, "ImDrawList_GetVertexPtr");
 			bindFunc(cast(void**)&ImDrawList_GetCmdSize, "ImDrawList_GetCmdSize");
 			bindFunc(cast(void**)&ImDrawList_GetCmdPtr, "ImDrawList_GetCmdPtr");
+            bindFunc(cast(void**)&ImGuiIO_AddInputCharacter, "ImGuiIO_AddInputCharacter");
         }
     }
 
