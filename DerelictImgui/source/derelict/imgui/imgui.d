@@ -74,6 +74,8 @@ class DerelictImguiLoader : SharedLibLoader
 			bindFunc(cast(void**)&ImGui_NewFrame, "ImGui_NewFrame");
 			bindFunc(cast(void**)&ImGui_Render, "ImGui_Render");
 
+            bindFunc(cast(void**)&ImGui_ShowTestWindow, "ImGui_ShowTestWindow");
+
             bindFunc(cast(void**)&ImGui_Begin, "ImGui_Begin");
             bindFunc(cast(void**)&ImGui_End, "ImGui_End");
 
@@ -83,6 +85,7 @@ class DerelictImguiLoader : SharedLibLoader
 			bindFunc(cast(void**)&ImGui_Button, "ImGui_Button");
 
             bindFunc(cast(void**)&ImGui_SetNextWindowSize, "ImGui_SetNextWindowSize");
+            bindFunc(cast(void**)&ImGui_SetNextWindowPos, "ImGui_SetNextWindowPos");
 
 			bindFunc(cast(void**)&ImFontAtlas_GetTexDataAsRGBA32, "ImFontAtlas_GetTexDataAsRGBA32");
             bindFunc(cast(void**)&ImFontAtlas_SetTexID, "ImFontAtlas_SetTexID");

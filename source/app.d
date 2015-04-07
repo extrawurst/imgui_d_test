@@ -76,14 +76,14 @@ void main()
     		ImGui_Text("Hello");
     		ImGui_End();
 		}
-		/+
+		
 		// 3. Show the ImGui test window. Most of the sample code is in ImGui::ShowTestWindow()
 		if (show_test_window)
 		{
-		    ImGui::SetNextWindowPos(ImVec2(650, 20), ImGuiSetCond_FirstUseEver);
-		    ImGui::ShowTestWindow(&show_test_window);
+		    ImGui_SetNextWindowPos(ImVec2(650, 20), ImGuiSetCond_FirstUseEver);
+		    ImGui_ShowTestWindow(&show_test_window);
 		}
-		+/
+		
 		// Rendering
 		glViewport(0, 0, cast(int)io.DisplaySize.x, cast(int)io.DisplaySize.y);
         glClearColor(clear_color[0], clear_color[1], clear_color[2], 0);

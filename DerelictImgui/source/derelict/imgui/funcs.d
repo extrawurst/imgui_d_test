@@ -46,6 +46,8 @@ extern(C) @nogc nothrow
 	alias void function() da_ImGui_NewFrame;
 	alias void function() da_ImGui_Render;
 
+    alias void function(bool* opened) da_ImGui_ShowTestWindow;
+
     alias bool function(in char* name="debug", bool* p_opened=null, ImGuiWindowFlags flags=0) da_ImGui_Begin;
     alias void function() da_ImGui_End;
 
@@ -54,7 +56,8 @@ extern(C) @nogc nothrow
 	alias void function(in char* label,float* v,float v_min,float v_max,const char* display_format="%.3f",float power=1.0f) da_ImGui_SliderFloat;
 	alias bool function(const char* label, const ImVec2* size=&foo, bool repeat_when_held=false) da_ImGui_Button;
 
-    alias void function(in ImVec2 size, ImGuiSetCond cond) da_ImGui_SetNextWindowSize;
+    alias void function(in ImVec2 size, ImGuiSetCond cond=0) da_ImGui_SetNextWindowSize;
+    alias void function(in ImVec2 pos, ImGuiSetCond cond=0) da_ImGui_SetNextWindowPos;
 
 	alias void function(ImFontAtlas* atlas,ubyte** out_pixels,int* out_width,int* out_height,int* out_bytes_per_pixel) da_ImFontAtlas_GetTexDataAsRGBA32;
     alias void function(ImFontAtlas* atlas, void* id) da_ImFontAtlas_SetTexID;
@@ -72,6 +75,8 @@ __gshared
 	da_ImGui_NewFrame ImGui_NewFrame;
 	da_ImGui_Render ImGui_Render;
 
+    da_ImGui_ShowTestWindow ImGui_ShowTestWindow;
+
     da_ImGui_Begin ImGui_Begin;
     da_ImGui_End ImGui_End;
 
@@ -80,6 +85,7 @@ __gshared
 	da_ImGui_Button ImGui_Button;
 
     da_ImGui_SetNextWindowSize ImGui_SetNextWindowSize;
+    da_ImGui_SetNextWindowPos ImGui_SetNextWindowPos;
 
 	da_ImFontAtlas_GetTexDataAsRGBA32 ImFontAtlas_GetTexDataAsRGBA32;
     da_ImFontAtlas_SetTexID ImFontAtlas_SetTexID;
