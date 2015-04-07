@@ -74,6 +74,20 @@ void main()
             ImGui_SetNextWindowSize(ImVec2(200,100), ImGuiSetCond_FirstUseEver);
     		ImGui_Begin("Another Window", &show_another_window);
     		ImGui_Text("Hello");
+            if (ImGui_TreeNode("Tree"))
+            {
+                for (size_t i = 0; i < 5; i++)
+                {
+                    if (ImGui_TreeNode_IdFmt(cast(void*)i, "Child %d", i))
+                    {
+                        ImGui_Text("blah blah");
+                        ImGui_SameLine();
+                        ImGui_SmallButton("print");
+                        ImGui_TreePop();
+                    }
+                }
+                ImGui_TreePop();
+            }
     		ImGui_End();
 		}
 		

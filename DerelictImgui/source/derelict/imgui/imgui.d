@@ -82,7 +82,9 @@ class DerelictImguiLoader : SharedLibLoader
 			bindFunc(cast(void**)&ImGui_Text, "ImGui_Text");
 			bindFunc(cast(void**)&ImGui_SliderFloat, "ImGui_SliderFloat");
             bindFunc(cast(void**)&ImGui_ColorEdit3, "ImGui_ColorEdit3");
+
 			bindFunc(cast(void**)&ImGui_Button, "ImGui_Button");
+            bindFunc(cast(void**)&ImGui_SmallButton, "ImGui_SmallButton");
 
             bindFunc(cast(void**)&ImGui_SetNextWindowSize, "ImGui_SetNextWindowSize");
             bindFunc(cast(void**)&ImGui_SetNextWindowPos, "ImGui_SetNextWindowPos");
@@ -94,6 +96,12 @@ class DerelictImguiLoader : SharedLibLoader
 			bindFunc(cast(void**)&ImDrawList_GetCmdSize, "ImDrawList_GetCmdSize");
 			bindFunc(cast(void**)&ImDrawList_GetCmdPtr, "ImDrawList_GetCmdPtr");
             bindFunc(cast(void**)&ImGuiIO_AddInputCharacter, "ImGuiIO_AddInputCharacter");
+
+            bindFunc(cast(void**)&ImGui_TreeNode, "ImGui_TreeNode");
+            bindFunc(cast(void**)&ImGui_TreeNode_IdFmt, "ImGui_TreeNode_IdFmt");
+            bindFunc(cast(void**)&ImGui_TreePop, "ImGui_TreePop");
+
+            bindFunc(cast(void**)&ImGui_SameLine, "ImGui_SameLine");
         }
     }
 
