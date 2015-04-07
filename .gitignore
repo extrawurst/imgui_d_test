@@ -4,3 +4,7 @@ __dummy.html
 *.o
 *.obj
 DerelictImgui/lib/
+cimgui.dylib
+dub.selections.json
+imgui.ini
+imgui_d_test
