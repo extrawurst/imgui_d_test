@@ -1,0 +1,11 @@
+{
+	"name": "imgui_d_test",
+	"description": "A minimal D application.",
+	"copyright": "Copyright © 2015, sdilly",
+	"authors": ["sdilly"],
+	"dependencies": {
+		"derelict-imgui": {"version":"~master", "path": "./DerelictImgui/"},
+		"derelict-glfw3": "~>1.1.0",
+		"derelict-gl3": "~>1.0.12",
+	}
+}
