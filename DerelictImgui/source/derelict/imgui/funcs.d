@@ -129,13 +129,13 @@ extern(C) @nogc nothrow
 	alias da_ig_SetColumnOffset				= void				function(int column_index, float offset_x);
 	alias da_ig_GetColumnWidth				= float			function(int column_index = -1);
 	alias da_ig_GetColumnsCount				= int				function();
-	//alias da_ig_GetCursorPos				= struct ImVec2	function();
+	alias da_ig_GetCursorPos				= void			function(ImVec2* pOut);
 	alias da_ig_GetCursorPosX				= float			function();
 	alias da_ig_GetCursorPosY				= float			function();
 	alias da_ig_SetCursorPos				= void				function(const ImVec2 pos);
 	alias da_ig_SetCursorPosX				= void				function(float x);
 	alias da_ig_SetCursorPosY				= void				function(float y);
-	//alias da_ig_GetCursorScreenPos		= struct ImVec2	function();
+	alias da_ig_GetCursorScreenPos			= void function(ImVec2* pOut);
 	alias da_ig_SetCursorScreenPos			= void				function(const ImVec2 pos);
 	alias da_ig_AlignFirstTextHeightToWidgets	= void				function();
 	alias da_ig_GetTextLineHeight			= float			function();
@@ -243,9 +243,9 @@ extern(C) @nogc nothrow
 	alias da_ig_IsItemHoveredRect			= bool				function();
 	alias da_ig_IsItemActive				= bool				function();
 	alias da_ig_IsAnyItemActive				= bool				function();
-	//alias da_ig_GetItemRectMin			= struct ImVec2	function();
-	//alias da_ig_GetItemRectMax			= struct ImVec2	function();
-	//alias da_ig_GetItemRectSize			= struct ImVec2	function();
+	alias da_ig_GetItemRectMin				= void function(ImVec2* pOut);
+	alias da_ig_GetItemRectMax				= void function(ImVec2* pOut);
+	alias da_ig_GetItemRectSize				= void function(ImVec2* pOut);
 	alias da_ig_IsWindowFocused				= bool				function();
 	alias da_ig_IsRootWindowFocused			= bool				function();
 	alias da_ig_IsRootWindowOrAnyChildFocused	= bool				function();
@@ -258,15 +258,15 @@ extern(C) @nogc nothrow
 	alias da_ig_IsMouseHoveringRect			= bool				function(const ImVec2 rect_min, const ImVec2 rect_max);
 	alias da_ig_IsMouseDragging				= bool				function(int button = 0, float lock_threshold = -1.0f);
 	alias da_ig_IsPosHoveringAnyWindow		= bool				function(const ImVec2 pos);
-	//alias da_ig_GetMousePos				= struct ImVec2	function();
-	//alias da_ig_GetMouseDragDelta			= struct ImVec2	function(int button = 0, float lock_threshold = -1.0f);
+	alias da_ig_GetMousePos					= void function(ImVec2* pOut);
+	alias da_ig_GetMouseDragDelta			= void function(ImVec2* pOut, int button = 0, float lock_threshold = -1.0f);
 	alias da_ig_GetMouseCursor				= ImGuiMouseCursor function();
 	alias da_ig_SetMouseCursor				= void				function(ImGuiMouseCursor type);
 	alias da_ig_GetTime						= float			function();
 	alias da_ig_GetFrameCount				= int				function();
 	alias da_ig_GetStyleColName				= const char*		function(ImGuiCol idx);
-	//alias da_ig_CalcItemRectClosestPoint		= struct ImVec2	function(const ImVec2 pos, bool on_edge = false, float outward = +0.0f);
-	//alias da_ig_CalcTextSize				= struct ImVec2	function(const char* text, const char* text_end = null, bool hide_text_after_double_hash = false, float wrap_width = -1.0f)
+	alias da_ig_CalcItemRectClosestPoint	= void function(ImVec2* pOut, const ImVec2 pos, bool on_edge = false, float outward = +0.0f);
+	alias da_ig_CalcTextSize				= void function(ImVec2* pOut, const char* text, const char* text_end = null, bool hide_text_after_double_hash = false, float wrap_width = -1.0f);
 	alias da_ig_CalcListClipping			= void				function(int items_count, float items_height, int* out_items_display_start, int* out_items_display_end);
 
 	alias da_ig_BeginChildFrame				= void				function(ImGuiID id, const ImVec2 size);
@@ -382,13 +382,13 @@ __gshared
 	da_ig_SetColumnOffset ig_SetColumnOffset;
 	da_ig_GetColumnWidth ig_GetColumnWidth;
 	da_ig_GetColumnsCount ig_GetColumnsCount;
-	//da_ig_GetCursorPos ig_GetCursorPos;
+	da_ig_GetCursorPos ig_GetCursorPos;
 	da_ig_GetCursorPosX ig_GetCursorPosX;
 	da_ig_GetCursorPosY ig_GetCursorPosY;
 	da_ig_SetCursorPos ig_SetCursorPos;
 	da_ig_SetCursorPosX ig_SetCursorPosX;
 	da_ig_SetCursorPosY ig_SetCursorPosY;
-	//da_ig_GetCursorScreenPos ig_GetCursorScreenPos;
+	da_ig_GetCursorScreenPos ig_GetCursorScreenPos;
 	da_ig_SetCursorScreenPos ig_SetCursorScreenPos;
 	da_ig_AlignFirstTextHeightToWidgets ig_AlignFirstTextHeightToWidgets;
 	da_ig_GetTextLineHeight ig_GetTextLineHeight;
@@ -496,9 +496,9 @@ __gshared
 	da_ig_IsItemHoveredRect ig_IsItemHoveredRect;
 	da_ig_IsItemActive ig_IsItemActive;
 	da_ig_IsAnyItemActive ig_IsAnyItemActive;
-	//da_ig_GetItemRectMin ig_GetItemRectMin;
-	//da_ig_GetItemRectMax ig_GetItemRectMax;
-	//da_ig_GetItemRectSize ig_GetItemRectSize;
+	da_ig_GetItemRectMin ig_GetItemRectMin;
+	da_ig_GetItemRectMax ig_GetItemRectMax;
+	da_ig_GetItemRectSize ig_GetItemRectSize;
 	da_ig_IsWindowFocused ig_IsWindowFocused;
 	da_ig_IsRootWindowFocused ig_IsRootWindowFocused;
 	da_ig_IsRootWindowOrAnyChildFocused ig_IsRootWindowOrAnyChildFocused;
@@ -511,15 +511,15 @@ __gshared
 	da_ig_IsMouseHoveringRect ig_IsMouseHoveringRect;
 	da_ig_IsMouseDragging ig_IsMouseDragging;
 	da_ig_IsPosHoveringAnyWindow ig_IsPosHoveringAnyWindow;
-	//da_ig_GetMousePos ig_GetMousePos;
-	//da_ig_GetMouseDragDelta ig_GetMouseDragDelta;
+	da_ig_GetMousePos ig_GetMousePos;
+	da_ig_GetMouseDragDelta ig_GetMouseDragDelta;
 	da_ig_GetMouseCursor ig_GetMouseCursor;
 	da_ig_SetMouseCursor ig_SetMouseCursor;
 	da_ig_GetTime ig_GetTime;
 	da_ig_GetFrameCount ig_GetFrameCount;
 	da_ig_GetStyleColName ig_GetStyleColName;
-	//da_ig_CalcItemRectClosestPoint ig_CalcItemRectClosestPoint;
-	//da_ig_CalcTextSize ig_CalcTextSize;
+	da_ig_CalcItemRectClosestPoint ig_CalcItemRectClosestPoint;
+	da_ig_CalcTextSize ig_CalcTextSize;
 	da_ig_CalcListClipping ig_CalcListClipping;
 
 	da_ig_BeginChildFrame ig_BeginChildFrame;

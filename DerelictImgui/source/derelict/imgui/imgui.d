@@ -160,13 +160,13 @@ class DerelictImguiLoader : SharedLibLoader
 				bindFunc(cast(void**)&ig_SetColumnOffset, "ig_SetColumnOffset");
 				bindFunc(cast(void**)&ig_GetColumnWidth, "ig_GetColumnWidth");
 				bindFunc(cast(void**)&ig_GetColumnsCount, "ig_GetColumnsCount");
-	//			bindFunc(cast(void**)&ig_GetCursorPos, "ig_GetCursorPos");
+				bindFunc(cast(void**)&ig_GetCursorPos, "ig_GetCursorPos");
 				bindFunc(cast(void**)&ig_GetCursorPosX, "ig_GetCursorPosX");
 				bindFunc(cast(void**)&ig_GetCursorPosY, "ig_GetCursorPosY");
 				bindFunc(cast(void**)&ig_SetCursorPos, "ig_SetCursorPos");
 				bindFunc(cast(void**)&ig_SetCursorPosX, "ig_SetCursorPosX");
 				bindFunc(cast(void**)&ig_SetCursorPosY, "ig_SetCursorPosY");
-	//			bindFunc(cast(void**)&ig_GetCursorScreenPos, "ig_GetCursorScreenPos");
+				bindFunc(cast(void**)&ig_GetCursorScreenPos, "ig_GetCursorScreenPos");
 				bindFunc(cast(void**)&ig_SetCursorScreenPos, "ig_SetCursorScreenPos");
 				bindFunc(cast(void**)&ig_AlignFirstTextHeightToWidgets, "ig_AlignFirstTextHeightToWidgets");
 				bindFunc(cast(void**)&ig_GetTextLineHeight, "ig_GetTextLineHeight");
@@ -274,9 +274,9 @@ class DerelictImguiLoader : SharedLibLoader
 				bindFunc(cast(void**)&ig_IsItemHoveredRect, "ig_IsItemHoveredRect");
 				bindFunc(cast(void**)&ig_IsItemActive, "ig_IsItemActive");
 				bindFunc(cast(void**)&ig_IsAnyItemActive, "ig_IsAnyItemActive");
-	//			bindFunc(cast(void**)&ig_GetItemRectMin, "ig_GetItemRectMin");
-	//			bindFunc(cast(void**)&ig_GetItemRectMax, "ig_GetItemRectMax");
-	//			bindFunc(cast(void**)&ig_GetItemRectSize, "ig_GetItemRectSize");
+				bindFunc(cast(void**)&ig_GetItemRectMin, "ig_GetItemRectMin");
+				bindFunc(cast(void**)&ig_GetItemRectMax, "ig_GetItemRectMax");
+				bindFunc(cast(void**)&ig_GetItemRectSize, "ig_GetItemRectSize");
 				bindFunc(cast(void**)&ig_IsWindowFocused, "ig_IsWindowFocused");
 				bindFunc(cast(void**)&ig_IsRootWindowFocused, "ig_IsRootWindowFocused");
 				bindFunc(cast(void**)&ig_IsRootWindowOrAnyChildFocused, "ig_IsRootWindowOrAnyChildFocused");
@@ -289,15 +289,15 @@ class DerelictImguiLoader : SharedLibLoader
 				bindFunc(cast(void**)&ig_IsMouseHoveringRect, "ig_IsMouseHoveringRect");
 				bindFunc(cast(void**)&ig_IsMouseDragging, "ig_IsMouseDragging");
 				bindFunc(cast(void**)&ig_IsPosHoveringAnyWindow, "ig_IsPosHoveringAnyWindow");
-	//			bindFunc(cast(void**)&ig_GetMousePos, "ig_GetMousePos");
-	//			bindFunc(cast(void**)&ig_GetMouseDragDelta, "ig_GetMouseDragDelta");
+				bindFunc(cast(void**)&ig_GetMousePos, "ig_GetMousePos");
+				bindFunc(cast(void**)&ig_GetMouseDragDelta, "ig_GetMouseDragDelta");
 				bindFunc(cast(void**)&ig_GetMouseCursor, "ig_GetMouseCursor");
 				bindFunc(cast(void**)&ig_SetMouseCursor, "ig_SetMouseCursor");
 				bindFunc(cast(void**)&ig_GetTime, "ig_GetTime");
 				bindFunc(cast(void**)&ig_GetFrameCount, "ig_GetFrameCount");
 				bindFunc(cast(void**)&ig_GetStyleColName, "ig_GetStyleColName");
-	//			bindFunc(cast(void**)&ig_CalcItemRectClosestPoint, "ig_CalcItemRectClosestPoint");
-	//			bindFunc(cast(void**)&ig_CalcTextSize, "ig_CalcTextSize");
+				bindFunc(cast(void**)&ig_CalcItemRectClosestPoint, "ig_CalcItemRectClosestPoint");
+				bindFunc(cast(void**)&ig_CalcTextSize, "ig_CalcTextSize");
 				bindFunc(cast(void**)&ig_CalcListClipping, "ig_CalcListClipping");
 
 				bindFunc(cast(void**)&ig_BeginChildFrame, "ig_BeginChildFrame");
