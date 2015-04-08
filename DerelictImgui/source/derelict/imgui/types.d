@@ -34,7 +34,6 @@ module derelict.imgui.types;
 import derelict.util.system;
 
 // User fill ImGuiIO.KeyMap[] array with indices into the ImGuiIO.KeysDown[512] array
-alias ImGuiKey = int;
 enum ImGuiKey_:int
 {
 	ImGuiKey_Tab,
@@ -57,7 +56,6 @@ enum ImGuiKey_:int
 	ImGuiKey_COUNT
 };
 
-alias ImGuiWindowFlags = int; 
 enum
 {
     // Default: 0
@@ -79,7 +77,6 @@ enum
     ImGuiWindowFlags_Popup                  = 1 << 14   // For internal use by BeginPopup()
 };
 
-alias ImGuiSetCond = int;
 enum
 {
     ImGuiSetCond_Always        = 1 << 0, // Set the variable
@@ -148,9 +145,21 @@ align(1) struct ImVec4
 struct ImFont{}
 struct ImFontAtlas{}
 struct ImDrawList{}
+struct ImGuiStorage{}
 
-alias ImWchar = ushort;
-alias ImU32 = uint;
+alias uint ImU32;
+alias ushort ImWchar;     // character for display
+alias void* ImTextureID;          // user data to refer to a texture (e.g. store your texture handle/id)
+alias ImU32 ImGuiID;              // unique ID used by widgets (typically hashed from a stack of string)
+alias int ImGuiCol;               // enum ImGuiCol_
+alias int ImGuiStyleVar;          // enum ImGuiStyleVar_
+alias int ImGuiKey;               // enum ImGuiKey_
+alias int ImGuiColorEditMode;     // enum ImGuiColorEditMode_
+alias int ImGuiMouseCursor;       // enum ImGuiMouseCursor_
+alias int ImGuiWindowFlags;       // enum ImGuiWindowFlags_
+alias int ImGuiSetCond;           // enum ImGuiSetCond_
+alias int ImGuiInputTextFlags;    // enum ImGuiInputTextFlags_
+alias int function(ImGuiTextEditCallbackData *data) ImGuiTextEditCallback;
 
 alias RenderDrawListFunc = extern(C) nothrow void function(ImDrawList** draw_lists, int count);
 alias GetClipboardTextFunc = extern(C) nothrow const(char)* function();
@@ -158,6 +167,30 @@ alias SetClipboardTextFunc = extern(C) nothrow void function(const(char)*);
 alias MemAllocFunc = extern(C) nothrow void* function(size_t);
 alias MemFreeFunc = extern(C) nothrow void function(void*);
 alias ImeSetInputScreenPosFunc = extern(C) nothrow void function(int,int);
+
+// Shared state of InputText(), passed to callback when a ImGuiInputTextFlags_Callback* flag is used.
+align(1) struct ImGuiTextEditCallbackData
+{
+    ImGuiInputTextFlags EventFlag;      // One of ImGuiInputTextFlags_Callback* // Read-only
+    ImGuiInputTextFlags Flags;          // What user passed to InputText()      // Read-only
+    void*               UserData;       // What user passed to InputText()      // Read-only
+
+    // CharFilter event:
+    ImWchar             EventChar;      // Character input                      // Read-write (replace character or set to zero)
+
+    // Completion,History,Always events:
+    ImGuiKey            EventKey;       // Key pressed (Up/Down/TAB)            // Read-only
+    char*               Buf;            // Current text                         // Read-write (pointed data only)
+    size_t              BufSize;        //                                      // Read-only
+    bool                BufDirty;       // Set if you modify Buf directly       // Write
+    int                 CursorPos;      //                                      // Read-write
+    int                 SelectionStart; //                                      // Read-write (== to SelectionEnd when no selection)
+    int                 SelectionEnd;   //                                      // Read-write
+
+    // NB: calling those function loses selection.
+    //void DeleteChars(int pos, int bytes_count);
+    //void InsertChars(int pos, const char* text, const char* text_end = NULL);
+};
 
 align(1) struct ImGuiIO
 {
@@ -268,9 +301,6 @@ align(1) struct ImDrawVert
 	ImVec2  uv;
 	ImU32   col;
 };
-
-alias ImTextureID = void*;
-alias ImGuiID = ImU32;
 
 alias ImDrawCallback = void function(const ImDrawList* parent_list, const ImDrawCmd* cmd) nothrow;
 

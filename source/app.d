@@ -63,7 +63,7 @@ void main()
 			ig_Text("Hello, world!");
 			ig_SliderFloat("float", &f, 0.0f, 1.0f);
 			ig_ColorEdit3("clear color", clear_color);
-			if (ig_Button("Test Window",)) show_test_window ^= 1;
+			if (ig_Button("Test Window")) show_test_window ^= 1;
 			if (ig_Button("Another Window")) show_another_window ^= 1;
 			ig_Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ig_GetIO().Framerate, ig_GetIO().Framerate);
 		}
@@ -78,7 +78,7 @@ void main()
             {
                 for (size_t i = 0; i < 5; i++)
                 {
-                    if (ig_TreeNode_IdFmt(cast(void*)i, "Child %d", i))
+                    if (ig_TreeNode3(cast(void*)i, "Child %d", i))
                     {
                         ig_Text("blah blah");
                         ig_SameLine();
@@ -97,7 +97,7 @@ void main()
 		    ig_SetNextWindowPos(ImVec2(650, 20), ImGuiSetCond_FirstUseEver);
 		    ig_ShowTestWindow(&show_test_window);
 		}
-		
+
 		// Rendering
 		glViewport(0, 0, cast(int)io.DisplaySize.x, cast(int)io.DisplaySize.y);
         glClearColor(clear_color[0], clear_color[1], clear_color[2], 0);
