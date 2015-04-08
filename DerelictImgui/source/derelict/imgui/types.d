@@ -87,6 +87,50 @@ enum
     ImGuiSetCond_FirstUseEver  = 1 << 2  // Only set the variable if the window doesn't exist in the .ini file
 };
 
+enum ImGuiCol_
+{
+    ImGuiCol_Text,
+    ImGuiCol_WindowBg,
+    ImGuiCol_ChildWindowBg,
+    ImGuiCol_Border,
+    ImGuiCol_BorderShadow,
+    ImGuiCol_FrameBg,               // Background of checkbox, radio button, plot, slider, text input
+    ImGuiCol_FrameBgHovered,
+    ImGuiCol_FrameBgActive,
+    ImGuiCol_TitleBg,
+    ImGuiCol_TitleBgCollapsed,
+    ImGuiCol_ScrollbarBg,
+    ImGuiCol_ScrollbarGrab,
+    ImGuiCol_ScrollbarGrabHovered,
+    ImGuiCol_ScrollbarGrabActive,
+    ImGuiCol_ComboBg,
+    ImGuiCol_CheckMark,
+    ImGuiCol_SliderGrab,
+    ImGuiCol_SliderGrabActive,
+    ImGuiCol_Button,
+    ImGuiCol_ButtonHovered,
+    ImGuiCol_ButtonActive,
+    ImGuiCol_Header,
+    ImGuiCol_HeaderHovered,
+    ImGuiCol_HeaderActive,
+    ImGuiCol_Column,
+    ImGuiCol_ColumnHovered,
+    ImGuiCol_ColumnActive,
+    ImGuiCol_ResizeGrip,
+    ImGuiCol_ResizeGripHovered,
+    ImGuiCol_ResizeGripActive,
+    ImGuiCol_CloseButton,
+    ImGuiCol_CloseButtonHovered,
+    ImGuiCol_CloseButtonActive,
+    ImGuiCol_PlotLines,
+    ImGuiCol_PlotLinesHovered,
+    ImGuiCol_PlotHistogram,
+    ImGuiCol_PlotHistogramHovered,
+    ImGuiCol_TextSelectedBg,
+    ImGuiCol_TooltipBg,
+    ImGuiCol_COUNT
+};
+
 align(1) struct ImVec2
 {
 	float x=0;
@@ -101,6 +145,7 @@ align(1) struct ImVec4
 	float w=0;
 }
 
+struct ImFont{}
 struct ImFontAtlas{}
 struct ImDrawList{}
 
@@ -195,6 +240,28 @@ align(1) struct ImGuiIO
 	float[512]  KeysDownTime;          // Time the keyboard key has been down
 }
 
+align(1) struct ImGuiStyle
+{
+    float       Alpha;                      // Global alpha applies to everything in ImGui
+    ImVec2      WindowPadding;              // Padding within a window
+    ImVec2      WindowMinSize;              // Minimum window size
+    float       WindowRounding;             // Radius of window corners rounding. Set to 0.0f to have rectangular windows
+    float       ChildWindowRounding;        // Radius of child window corners rounding. Set to 0.0f to have rectangular windows
+    ImVec2      FramePadding;               // Padding within a framed rectangle (used by most widgets)
+    float       FrameRounding;              // Radius of frame corners rounding. Set to 0.0f to have rectangular frame (used by most widgets).
+    ImVec2      ItemSpacing;                // Horizontal and vertical spacing between widgets/lines
+    ImVec2      ItemInnerSpacing;           // Horizontal and vertical spacing between within elements of a composed widget (e.g. a slider and its label)
+    ImVec2      TouchExtraPadding;          // Expand reactive bounding box for touch-based system where touch position is not accurate enough. Unfortunately we don't sort widgets so priority on overlap will always be given to the first widget. So don't grow this too much!
+    ImVec2      AutoFitPadding;             // Extra space after auto-fit (double-clicking on resize grip)
+    float       WindowFillAlphaDefault;     // Default alpha of window background, if not specified in ImGui::Begin()
+    float       IndentSpacing;              // Horizontal indentation when e.g. entering a tree node
+    float       ColumnsMinSpacing;          // Minimum horizontal spacing between two columns
+    float       ScrollbarWidth;             // Width of the vertical scrollbar
+    float       GrabMinSize;                // Minimum width/height of a slider or scrollbar grab
+    ImVec2      DisplaySafeAreaPadding;     // Window positions are clamped to be visible within the display area. If you cannot see the edge of your screen (e.g. on a TV) increase the safe area padding.
+    ImVec4[ImGuiCol_.ImGuiCol_COUNT]      Colors;
+};
+
 align(1) struct ImDrawVert
 {
 	ImVec2  pos;
@@ -203,6 +270,7 @@ align(1) struct ImDrawVert
 };
 
 alias ImTextureID = void*;
+alias ImGuiID = ImU32;
 
 alias ImDrawCallback = void function(const ImDrawList* parent_list, const ImDrawCmd* cmd) nothrow;
 

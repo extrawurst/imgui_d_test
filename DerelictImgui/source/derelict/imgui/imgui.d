@@ -69,25 +69,59 @@ class DerelictImguiLoader : SharedLibLoader
     {
         override void loadSymbols()
         {
-			bindFunc(cast(void**)&ImGui_GetIO, "ImGui_GetIO");
-			bindFunc(cast(void**)&ImGui_Shutdown, "ImGui_Shutdown");
-			bindFunc(cast(void**)&ImGui_NewFrame, "ImGui_NewFrame");
-			bindFunc(cast(void**)&ImGui_Render, "ImGui_Render");
+			{
+				//search: (ig_\S+)
+				//replace: bindFunc\(cast\(void**\)&$1, "$1"\);
+			
+				bindFunc(cast(void**)&ig_GetIO, "ig_GetIO");
+				bindFunc(cast(void**)&ig_GetStyle, "ig_GetStyle");
+				bindFunc(cast(void**)&ig_NewFrame, "ig_NewFrame");
+				bindFunc(cast(void**)&ig_Render, "ig_Render");
+				bindFunc(cast(void**)&ig_Shutdown, "ig_Shutdown");
+				bindFunc(cast(void**)&ig_ShowUserGuide, "ig_ShowUserGuide");
+				bindFunc(cast(void**)&ig_ShowStyleEditor, "ig_ShowStyleEditor");
+				bindFunc(cast(void**)&ig_ShowTestWindow, "ig_ShowTestWindow");
+				bindFunc(cast(void**)&ig_ShowMetricsWindow, "ig_ShowMetricsWindow");
 
-            bindFunc(cast(void**)&ImGui_ShowTestWindow, "ImGui_ShowTestWindow");
+				// Window
+				bindFunc(cast(void**)&ig_Begin, "ig_Begin");
+				bindFunc(cast(void**)&ig_Begin2, "ig_Begin2");
+				bindFunc(cast(void**)&ig_End, "ig_End");
+				bindFunc(cast(void**)&ig_BeginChild, "ig_BeginChild");
+				bindFunc(cast(void**)&ig_BeginChild2, "ig_BeginChild2");
+				bindFunc(cast(void**)&ig_EndChild, "ig_EndChild");
+				bindFunc(cast(void**)&ig_GetContentRegionMax, "ig_GetContentRegionMax");
+				bindFunc(cast(void**)&ig_GetWindowContentRegionMin, "ig_GetWindowContentRegionMin");
+				bindFunc(cast(void**)&ig_GetWindowContentRegionMax, "ig_GetWindowContentRegionMax");
+				bindFunc(cast(void**)&ig_GetWindowDrawList, "ig_GetWindowDrawList");
+				bindFunc(cast(void**)&ig_GetWindowFont, "ig_GetWindowFont");
+				bindFunc(cast(void**)&ig_GetWindowFontSize, "ig_GetWindowFontSize");
+				bindFunc(cast(void**)&ig_SetWindowFontScale, "ig_SetWindowFontScale");
+				bindFunc(cast(void**)&ig_GetWindowPos, "ig_GetWindowPos");
+				bindFunc(cast(void**)&ig_GetWindowSize, "ig_GetWindowSize");
+				bindFunc(cast(void**)&ig_GetWindowWidth, "ig_GetWindowWidth");
+				bindFunc(cast(void**)&ig_GetWindowCollapsed, "ig_GetWindowCollapsed");
 
-            bindFunc(cast(void**)&ImGui_Begin, "ImGui_Begin");
-            bindFunc(cast(void**)&ImGui_End, "ImGui_End");
+				bindFunc(cast(void**)&ig_SetNextWindowPos, "ig_SetNextWindowPos");
+				bindFunc(cast(void**)&ig_SetNextWindowSize, "ig_SetNextWindowSize");
+				bindFunc(cast(void**)&ig_SetNextWindowCollapsed, "ig_SetNextWindowCollapsed");
+				bindFunc(cast(void**)&ig_SetNextWindowFocus, "ig_SetNextWindowFocus");
+				bindFunc(cast(void**)&ig_SetWindowPos, "ig_SetWindowPos");
+				bindFunc(cast(void**)&ig_SetWindowSize, "ig_SetWindowSize");
+				bindFunc(cast(void**)&ig_SetWindowCollapsed, "ig_SetWindowCollapsed");
+				bindFunc(cast(void**)&ig_SetWindowFocus, "ig_SetWindowFocus");
+				bindFunc(cast(void**)&ig_SetWindowPos2, "ig_SetWindowPos2");
+				bindFunc(cast(void**)&ig_SetWindowSize2, "ig_SetWindowSize2");
+				bindFunc(cast(void**)&ig_SetWindowCollapsed2, "ig_SetWindowCollapsed2");
+				bindFunc(cast(void**)&ig_SetWindowFocus2, "ig_SetWindowFocus2");
+			}
 
-			bindFunc(cast(void**)&ImGui_Text, "ImGui_Text");
-			bindFunc(cast(void**)&ImGui_SliderFloat, "ImGui_SliderFloat");
-            bindFunc(cast(void**)&ImGui_ColorEdit3, "ImGui_ColorEdit3");
+			bindFunc(cast(void**)&ig_Text, "ig_Text");
+			bindFunc(cast(void**)&ig_SliderFloat, "ig_SliderFloat");
+            bindFunc(cast(void**)&ig_ColorEdit3, "ig_ColorEdit3");
 
-			bindFunc(cast(void**)&ImGui_Button, "ImGui_Button");
-            bindFunc(cast(void**)&ImGui_SmallButton, "ImGui_SmallButton");
-
-            bindFunc(cast(void**)&ImGui_SetNextWindowSize, "ImGui_SetNextWindowSize");
-            bindFunc(cast(void**)&ImGui_SetNextWindowPos, "ImGui_SetNextWindowPos");
+			bindFunc(cast(void**)&ig_Button, "ig_Button");
+            bindFunc(cast(void**)&ig_SmallButton, "ig_SmallButton");
 
 			bindFunc(cast(void**)&ImFontAtlas_GetTexDataAsRGBA32, "ImFontAtlas_GetTexDataAsRGBA32");
             bindFunc(cast(void**)&ImFontAtlas_SetTexID, "ImFontAtlas_SetTexID");
@@ -97,11 +131,11 @@ class DerelictImguiLoader : SharedLibLoader
 			bindFunc(cast(void**)&ImDrawList_GetCmdPtr, "ImDrawList_GetCmdPtr");
             bindFunc(cast(void**)&ImGuiIO_AddInputCharacter, "ImGuiIO_AddInputCharacter");
 
-            bindFunc(cast(void**)&ImGui_TreeNode, "ImGui_TreeNode");
-            bindFunc(cast(void**)&ImGui_TreeNode_IdFmt, "ImGui_TreeNode_IdFmt");
-            bindFunc(cast(void**)&ImGui_TreePop, "ImGui_TreePop");
+            bindFunc(cast(void**)&ig_TreeNode, "ig_TreeNode");
+            bindFunc(cast(void**)&ig_TreeNode_IdFmt, "ig_TreeNode_IdFmt");
+            bindFunc(cast(void**)&ig_TreePop, "ig_TreePop");
 
-            bindFunc(cast(void**)&ImGui_SameLine, "ImGui_SameLine");
+            bindFunc(cast(void**)&ig_SameLine, "ig_SameLine");
         }
     }
 

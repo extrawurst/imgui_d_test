@@ -35,7 +35,7 @@ void main()
 	DerelictGL3.reload();
 	
 	// Setup ImGui binding
-	ImGui_ImplGlfwGL3_Init(window, true);
+	ig_ImplGlfwGL3_Init(window, true);
 	//ImGuiIO& io = ImGui::GetIO();
 	//ImFont* my_font0 = io.Fonts->AddFontDefault();
 	//ImFont* my_font1 = io.Fonts->AddFontFromFileTTF("../../extra_fonts/DroidSans.ttf", 16.0f);
@@ -51,62 +51,62 @@ void main()
 	// Main loop
 	while (!glfwWindowShouldClose(window))
 	{
-		ImGuiIO* io = ImGui_GetIO();
+		ImGuiIO* io = ig_GetIO();
 		glfwPollEvents();
 
-		ImGui_ImplGlfwGL3_NewFrame();
+		ig_ImplGlfwGL3_NewFrame();
 
 		// 1. Show a simple window
 		// Tip: if we don't call ImGui::Begin()/ImGui::End() the widgets appears in a window automatically called "Debug"
 		{
 			static float f = 0.0f;
-			ImGui_Text("Hello, world!");
-			ImGui_SliderFloat("float", &f, 0.0f, 1.0f);
-			ImGui_ColorEdit3("clear color", clear_color);
-			if (ImGui_Button("Test Window",)) show_test_window ^= 1;
-			if (ImGui_Button("Another Window")) show_another_window ^= 1;
-			ImGui_Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui_GetIO().Framerate, ImGui_GetIO().Framerate);
+			ig_Text("Hello, world!");
+			ig_SliderFloat("float", &f, 0.0f, 1.0f);
+			ig_ColorEdit3("clear color", clear_color);
+			if (ig_Button("Test Window",)) show_test_window ^= 1;
+			if (ig_Button("Another Window")) show_another_window ^= 1;
+			ig_Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ig_GetIO().Framerate, ig_GetIO().Framerate);
 		}
 		
 		// 2. Show another simple window, this time using an explicit Begin/End pair
 		if (show_another_window)
 		{
-            ImGui_SetNextWindowSize(ImVec2(200,100), ImGuiSetCond_FirstUseEver);
-    		ImGui_Begin("Another Window", &show_another_window);
-    		ImGui_Text("Hello");
-            if (ImGui_TreeNode("Tree"))
+            ig_SetNextWindowSize(ImVec2(200,100), ImGuiSetCond_FirstUseEver);
+    		ig_Begin("Another Window", &show_another_window);
+    		ig_Text("Hello");
+            if (ig_TreeNode("Tree"))
             {
                 for (size_t i = 0; i < 5; i++)
                 {
-                    if (ImGui_TreeNode_IdFmt(cast(void*)i, "Child %d", i))
+                    if (ig_TreeNode_IdFmt(cast(void*)i, "Child %d", i))
                     {
-                        ImGui_Text("blah blah");
-                        ImGui_SameLine();
-                        ImGui_SmallButton("print");
-                        ImGui_TreePop();
+                        ig_Text("blah blah");
+                        ig_SameLine();
+                        ig_SmallButton("print");
+                        ig_TreePop();
                     }
                 }
-                ImGui_TreePop();
+                ig_TreePop();
             }
-    		ImGui_End();
+    		ig_End();
 		}
 		
 		// 3. Show the ImGui test window. Most of the sample code is in ImGui::ShowTestWindow()
 		if (show_test_window)
 		{
-		    ImGui_SetNextWindowPos(ImVec2(650, 20), ImGuiSetCond_FirstUseEver);
-		    ImGui_ShowTestWindow(&show_test_window);
+		    ig_SetNextWindowPos(ImVec2(650, 20), ImGuiSetCond_FirstUseEver);
+		    ig_ShowTestWindow(&show_test_window);
 		}
 		
 		// Rendering
 		glViewport(0, 0, cast(int)io.DisplaySize.x, cast(int)io.DisplaySize.y);
         glClearColor(clear_color[0], clear_color[1], clear_color[2], 0);
 		glClear(GL_COLOR_BUFFER_BIT);
-		ImGui_Render();
+		ig_Render();
 		glfwSwapBuffers(window);
 	}
 	
 	// Cleanup
-	ImGui_ImplGlfwGL3_Shutdown();
+	ig_ImplGlfwGL3_Shutdown();
 	glfwTerminate();
 }
