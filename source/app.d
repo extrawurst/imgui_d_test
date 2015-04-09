@@ -78,7 +78,7 @@ void main()
             {
                 for (size_t i = 0; i < 5; i++)
                 {
-                    if (ig_TreeNode3(cast(void*)i, "Child %d", i))
+                    if (ig_TreeNodePtr(cast(void*)i, "Child %d", i))
                     {
                         ig_Text("blah blah");
                         ig_SameLine();
