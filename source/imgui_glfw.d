@@ -118,8 +118,7 @@ void ig_ImplGlfwGL3_Init(GLFWwindow* window, bool install_callbacks)
 {
 	g_window = window;
 
-	ImGuiIO* io = ig_GetIO();
-    with(ImGuiKey_){
+	ImGuiIO* io = ig_GetIO(); 
     io.KeyMap[ImGuiKey_Tab] = GLFW_KEY_TAB;                 // Keyboard mapping. ImGui will use those indices to peek into the io.KeyDown[] array.
     io.KeyMap[ImGuiKey_LeftArrow] = GLFW_KEY_LEFT;
     io.KeyMap[ImGuiKey_RightArrow] = GLFW_KEY_RIGHT;
@@ -137,7 +136,6 @@ void ig_ImplGlfwGL3_Init(GLFWwindow* window, bool install_callbacks)
     io.KeyMap[ImGuiKey_X] = GLFW_KEY_X;
     io.KeyMap[ImGuiKey_Y] = GLFW_KEY_Y;
     io.KeyMap[ImGuiKey_Z] = GLFW_KEY_Z;
-    }
     
     io.RenderDrawListsFn = &ig_ImplGlfwGL3_RenderDrawLists;
     io.SetClipboardTextFn = &ig_ImplGlfwGL3_SetClipboardText;
