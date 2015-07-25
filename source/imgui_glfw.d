@@ -12,24 +12,21 @@ GLuint       g_FontTexture = 0;
 int          g_ShaderHandle = 0, g_VertHandle = 0, g_FragHandle = 0;
 int          g_AttribLocationTex = 0, g_AttribLocationProjMtx = 0;
 int          g_AttribLocationPosition = 0, g_AttribLocationUV = 0, g_AttribLocationColor = 0;
-size_t       g_VboMaxSize = 20000;
-uint         g_VboHandle, g_VaoHandle;
+uint         g_VboHandle, g_VaoHandle, g_ElementsHandle;
 
-extern(C) nothrow void igImplGlfwGL3_RenderDrawLists(ImDrawList** cmd_lists, int count)
+extern(C) nothrow void igImplGlfwGL3_RenderDrawLists(ImDrawData* data)
 {
-	if (count == 0)
-		return;
-
-	import std.stdio;
-
-	// Setup render state: alpha-blending enabled, no face culling, no depth testing, scissor enabled
-	glEnable(GL_BLEND);
-	glBlendEquation(GL_FUNC_ADD);
-	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-	glDisable(GL_CULL_FACE);
-	glDisable(GL_DEPTH_TEST);
-	glEnable(GL_SCISSOR_TEST);
-	glActiveTexture(GL_TEXTURE0);
+    // Setup render state: alpha-blending enabled, no face culling, no depth testing, scissor enabled
+    GLint last_program, last_texture;
+    glGetIntegerv(GL_CURRENT_PROGRAM, &last_program);
+    glGetIntegerv(GL_TEXTURE_BINDING_2D, &last_texture);
+    glEnable(GL_BLEND);
+    glBlendEquation(GL_FUNC_ADD);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    glDisable(GL_CULL_FACE);
+    glDisable(GL_DEPTH_TEST);
+    glEnable(GL_SCISSOR_TEST);
+    glActiveTexture(GL_TEXTURE0);
 
 	auto io = igGetIO();
 	// Setup orthographic projection matrix
@@ -46,72 +43,49 @@ extern(C) nothrow void igImplGlfwGL3_RenderDrawLists(ImDrawList** cmd_lists, int
 	glUniform1i(g_AttribLocationTex, 0);
 	glUniformMatrix4fv(g_AttribLocationProjMtx, 1, GL_FALSE, &ortho_projection[0][0]);
 
-	// Grow our buffer according to what we need
-	size_t total_vtx_count = 0;
-	for (int n = 0; n < count; n++)
-	{
-		total_vtx_count += ImDrawList_GetVertexBufferSize(cmd_lists[n]);
-	}
-	//try writefln("cnt: %s",total_vtx_count); catch{}
+    glBindVertexArray(g_VaoHandle);
+    glBindBuffer(GL_ARRAY_BUFFER, g_VboHandle);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, g_ElementsHandle);
 
-	glBindBuffer(GL_ARRAY_BUFFER, g_VboHandle);
-	size_t neededBufferSize = total_vtx_count * ImDrawVert.sizeof;
-	if (neededBufferSize > g_VboMaxSize)
-	{
-		g_VboMaxSize = neededBufferSize + 5000;  // Grow buffer
-		glBufferData(GL_ARRAY_BUFFER, g_VboMaxSize, null, GL_STREAM_DRAW);
-	}
-	
-	// Copy and convert all vertices into a single contiguous buffer
-	ubyte* buffer_data = cast(ubyte*)glMapBuffer(GL_ARRAY_BUFFER, GL_WRITE_ONLY);
-	if (!buffer_data)
-		return;
+    foreach (n; 0..data.CmdListsCount)
+    {
+        ImDrawList* cmd_list = data.CmdLists[n];
+        ImDrawIdx* idx_buffer_offset;
 
-	for (int n = 0; n < count; n++)
-	{
-		ImDrawList* cmd_list = cmd_lists[n];
-		auto vListSize = ImDrawList_GetVertexBufferSize(cmd_list) * ImDrawVert.sizeof;
-		import std.c.string:memcpy;
-		memcpy(buffer_data, ImDrawList_GetVertexPtr(cmd_list,0), vListSize);
-		buffer_data += vListSize;
-	}
-	glUnmapBuffer(GL_ARRAY_BUFFER);
-	glBindBuffer(GL_ARRAY_BUFFER, 0);
-	glBindVertexArray(g_VaoHandle);
-	
-	int cmd_offset = 0;
-	for (int n = 0; n < count; n++)
-	{
-		ImDrawList* cmd_list = cmd_lists[n];
-		int vtx_offset = cmd_offset;
+        auto countVertices = ImDrawList_GetVertexBufferSize(cmd_list);
+        auto countIndices = ImDrawList_GetIndexBufferSize(cmd_list);
 
-		auto cmdCnt = ImDrawList_GetCmdSize(cmd_list);
+        glBufferData(GL_ARRAY_BUFFER, countVertices * ImDrawVert.sizeof, cast(GLvoid*)ImDrawList_GetVertexPtr(cmd_list,0), GL_STREAM_DRAW);
+        glBufferData(GL_ELEMENT_ARRAY_BUFFER, countIndices * ImDrawIdx.sizeof, cast(GLvoid*)ImDrawList_GetIndexPtr(cmd_list,0), GL_STREAM_DRAW);
 
-		foreach(i; 0..cmdCnt)
-		{
-			auto pcmd = ImDrawList_GetCmdPtr(cmd_list, i);
+        auto cmdCnt = ImDrawList_GetCmdSize(cmd_list);
+        
+        foreach(i; 0..cmdCnt)
+        {
+            auto pcmd = ImDrawList_GetCmdPtr(cmd_list, i);
 
-			if (pcmd.user_callback)
-			{
-				pcmd.user_callback(cmd_list, pcmd);
-			}
-			else
-			{
-				glBindTexture(GL_TEXTURE_2D, cast(GLuint)pcmd.texture_id);
-				glScissor(cast(int)pcmd.clip_rect.x, cast(int)(height - pcmd.clip_rect.w), cast(int)(pcmd.clip_rect.z - pcmd.clip_rect.x), cast(int)(pcmd.clip_rect.w - pcmd.clip_rect.y));
-				glDrawArrays(GL_TRIANGLES, vtx_offset, pcmd.vtx_count);
-			}
-			vtx_offset += pcmd.vtx_count;
-		}
+            if (pcmd.UserCallback)
+            {
+                pcmd.UserCallback(cmd_list, pcmd);
+            }
+            else
+            {
+                glBindTexture(GL_TEXTURE_2D, cast(GLuint)pcmd.TextureId);
+                glScissor(cast(int)pcmd.ClipRect.x, cast(int)(height - pcmd.ClipRect.w), cast(int)(pcmd.ClipRect.z - pcmd.ClipRect.x), cast(int)(pcmd.ClipRect.w - pcmd.ClipRect.y));
+                glDrawElements(GL_TRIANGLES, pcmd.ElemCount, GL_UNSIGNED_SHORT, idx_buffer_offset);
+            }
 
-		cmd_offset = vtx_offset;
-	}
-	
-	// Restore modified state
-	glBindVertexArray(0);
-	glUseProgram(0);
-	glDisable(GL_SCISSOR_TEST);
-	glBindTexture(GL_TEXTURE_2D, 0);
+            idx_buffer_offset += pcmd.ElemCount;
+        }
+    }
+
+    // Restore modified state
+    glBindVertexArray(0);
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+    glUseProgram(last_program);
+    glDisable(GL_SCISSOR_TEST);
+    glBindTexture(GL_TEXTURE_2D, last_texture);
 }
 
 void igImplGlfwGL3_Init(GLFWwindow* window, bool install_callbacks)
@@ -198,16 +172,15 @@ void igImplGlfwGL3_CreateDeviceObjects()
 	g_AttribLocationUV = glGetAttribLocation(g_ShaderHandle, "UV");
 	g_AttribLocationColor = glGetAttribLocation(g_ShaderHandle, "Color");
 	
-	glGenBuffers(1, &g_VboHandle);
-	glBindBuffer(GL_ARRAY_BUFFER, g_VboHandle);
-	glBufferData(GL_ARRAY_BUFFER, g_VboMaxSize, null, GL_DYNAMIC_DRAW);
-	
-	glGenVertexArrays(1, &g_VaoHandle);
-	glBindVertexArray(g_VaoHandle);
-	glBindBuffer(GL_ARRAY_BUFFER, g_VboHandle);
-	glEnableVertexAttribArray(g_AttribLocationPosition);
-	glEnableVertexAttribArray(g_AttribLocationUV);
-	glEnableVertexAttribArray(g_AttribLocationColor);
+    glGenBuffers(1, &g_VboHandle);
+    glGenBuffers(1, &g_ElementsHandle);
+    
+    glGenVertexArrays(1, &g_VaoHandle);
+    glBindVertexArray(g_VaoHandle);
+    glBindBuffer(GL_ARRAY_BUFFER, g_VboHandle);
+    glEnableVertexAttribArray(g_AttribLocationPosition);
+    glEnableVertexAttribArray(g_AttribLocationUV);
+    glEnableVertexAttribArray(g_AttribLocationColor);
 
 	glVertexAttribPointer(g_AttribLocationPosition, 2, GL_FLOAT, GL_FALSE, ImDrawVert.sizeof, cast(void*)0);
     glVertexAttribPointer(g_AttribLocationUV, 2, GL_FLOAT, GL_FALSE, ImDrawVert.sizeof, cast(void*)ImDrawVert.uv.offsetof);
@@ -282,8 +255,10 @@ void igImplGlfwGL3_Shutdown()
 {
     if (g_VaoHandle) glDeleteVertexArrays(1, &g_VaoHandle);
     if (g_VboHandle) glDeleteBuffers(1, &g_VboHandle);
+    if (g_ElementsHandle) glDeleteBuffers(1, &g_ElementsHandle);
     g_VaoHandle = 0;
     g_VboHandle = 0;
+    g_ElementsHandle = 0;
     
     glDetachShader(g_ShaderHandle, g_VertHandle);
     glDeleteShader(g_VertHandle);
