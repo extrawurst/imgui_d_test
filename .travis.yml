@@ -4,14 +4,13 @@ sudo: false
 
 d:
   - dmd-2.068.0-b2
-  - dmd # dmd-2.067.0 currently
+  - dmd # dmd-2.067.0
   - dmd-2.065.0
   - dmd-2.066.1
-  - ldc
+  - ldc #ldc-0.15.1
   - ldc-0.14.0
-  - ldc-0.15.1
+  - gdc #gdc-4.9.2
   - gdc-4.9.0
-  - gdc
 
 script:
   - dub test --compiler=$DC || exit 1
