@@ -192,12 +192,12 @@ void igImplGlfwGL3_CreateDeviceObjects()
 	igImplGlfwGL3_CreateFontsTexture();
 }
 
-extern(C) nothrow const(char)* igImplGlfwGL3_GetClipboardText()
+extern(C) nothrow const(char)* igImplGlfwGL3_GetClipboardText(void* user_data)
 {
     return glfwGetClipboardString(g_window);
 }
 
-extern(C) nothrow void igImplGlfwGL3_SetClipboardText(const(char)* text)
+extern(C) nothrow void igImplGlfwGL3_SetClipboardText(void* user_data, const(char)* text)
 {
     glfwSetClipboardString(g_window, text);
 }
